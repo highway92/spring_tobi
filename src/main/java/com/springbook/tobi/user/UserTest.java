@@ -4,7 +4,8 @@ import java.sql.SQLException;
 
 public class UserTest {
     public UserTest() throws ClassNotFoundException, SQLException {
-        UserDao dao = new UserDao();
+        DaoFactory daoFactory = new DaoFactory();
+        UserDao dao = daoFactory.userDao();
 
         User user = new User();
         user.setId("whiteship");
