@@ -1,11 +1,14 @@
 package com.springbook.tobi.user;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
 import java.sql.SQLException;
 
 public class UserTest {
     public UserTest() throws ClassNotFoundException, SQLException {
-        DaoFactory daoFactory = new DaoFactory();
-        UserDao dao = daoFactory.userDao();
+        ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
+        UserDao dao = context.getBean(UserDao.class);
 
         User user = new User();
         user.setId("whiteship");
