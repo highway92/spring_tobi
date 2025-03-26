@@ -2,19 +2,15 @@ package com.springbook.tobi.user;
 
 import java.sql.*;
 
-public abstract class UserDao {
+public class UserDao {
+    private SimpleConnectionMaker simpleConnectionMaker;
 
-    public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
-//    private Connection getConnection() throws ClassNotFoundException, SQLException {
-//        Class.forName("org.postgresql.Driver");
-//        Connection c = DriverManager.getConnection(
-//                "jdbc:postgresql://localhost:5432/tobi", "postgres", "postgres"
-//        );
-//        return c;
-//    }
+    public UserDao() {
+        this.simpleConnectionMaker = new SimpleConnectionMaker();
+    }
 
     public void add(User user) throws ClassNotFoundException, SQLException {
-        Connection c = getConnection();
+        Connection c = simpleConnectionMaker.makeNewConnection();
 
         PreparedStatement ps = c.prepareStatement("insert into users (id,name,password) values(?,?,?)");
         ps.setString(1, user.getId());
@@ -26,7 +22,7 @@ public abstract class UserDao {
     }
 
     public User get(String id) throws ClassNotFoundException, SQLException {
-        Connection c = getConnection();
+        Connection c = simpleConnectionMaker.makeNewConnection();
 
         PreparedStatement ps = c.prepareStatement("select * from users where id=?");
         ps.setString(1, id);
