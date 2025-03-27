@@ -8,6 +8,10 @@ import java.sql.*;
 public class UserDao {
     private DataSource dataSource;
 
+    public UserDao(){};
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
     public UserDao(DataSource dataSource) {
         this.dataSource = dataSource;
     }
