@@ -52,10 +52,11 @@ public class UserDao {
         PreparedStatement ps = c.prepareStatement("select count(*) from users");
         ResultSet rs = ps.executeQuery();
         rs.next();
+        Integer result = rs.getInt(1);
         rs.close();
         ps.close();
         c.close();
-        return rs.getInt(1);
+        return result;
     }
 
 }
