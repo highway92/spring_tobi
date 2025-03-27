@@ -4,7 +4,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import javax.sql.DataSource;
 import java.sql.*;
-
 public class UserDao {
     private DataSource dataSource;
 

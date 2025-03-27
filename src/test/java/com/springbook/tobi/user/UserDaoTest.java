@@ -6,9 +6,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,14 +20,18 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserDaoTest {
     @Autowired
     private ApplicationContext applicationContext;
+    @Autowired
     private UserDao userDao;
     private User user1;
     private User user2;
     private User user3;
 
+
+
     @BeforeEach
     public void setUp() {
-        this.userDao = (UserDao) applicationContext.getBean("userDao");
+        DataSource dataSource = new SingleConnectionDataSource("jdbc:postgresql://localhost:5432/tobi_test", "postgres", "postgres", true);
+        this.userDao.setDataSource(dataSource);
         this.user1 = new User("a","a","a");
         this.user2 = new User("b","b","b");
         this.user3 = new User("c","c","c");
