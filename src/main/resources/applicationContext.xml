@@ -10,7 +10,12 @@
         <property name="password" value="postgres" />
     </bean>
 
+    <bean id="jdbcContext" class="com.springbook.tobi.user.JdbcContext">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
     <bean id="userDao" class="com.springbook.tobi.user.UserDao">
+        <property name="jdbcContext" ref="jdbcContext" />
         <property name="dataSource" ref="dataSource" />
     </bean>
 </beans>
