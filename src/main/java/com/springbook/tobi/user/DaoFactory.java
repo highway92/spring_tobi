@@ -22,15 +22,4 @@ public class DaoFactory {
         dataSource.setPassword("postgres");
         return dataSource;
     }
-
-    @Bean
-    public ConnectionMaker connectionMaker() {
-        return new SimpleConnectionMaker();
-    }
-
-    @Bean
-    public ConnectionMaker countingConnectionMaker() {
-        ConnectionMaker connectionMaker = new SimpleConnectionMaker();
-        return new CountingConnectionMaker(connectionMaker);
-    }
 }
