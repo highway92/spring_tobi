@@ -1,33 +1,23 @@
 package com.springbook.tobi.user;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import java.sql.*;
 public class UserDao {
     private DataSource dataSource;
-    private JdbcContext jdbcContext;
+    private JdbcTemplate jdbcTemplate;
     public UserDao(){};
 
-    public void setJdbcContext(JdbcContext jdbcContext) {
-        this.jdbcContext = jdbcContext;
-    }
     public void setDataSource(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.dataSource = dataSource;
     }
 
 
     public void add(User user) throws SQLException {
-        Connection c = dataSource.getConnection();
-        jdbcContext.workWithStatementStrategy(new StatementStrategy () {
-            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-                PreparedStatement ps = c.prepareStatement("insert into users (id,name,password) values(?,?,?)");
-                ps.setString(1, user.getId());
-                ps.setString(2, user.getName());
-                ps.setString(3, user.getPassword());
-                return ps;
-            }
-        });
+        this.jdbcTemplate.update("insert into users(id,name,password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
     }
 
     public User get(String id) throws SQLException {
@@ -54,7 +44,14 @@ public class UserDao {
 
 
     public void deleteAll() throws SQLException {
-        jdbcContext.executeSql("delete from users");
+//        this.jdbcTemplate.update(
+//                new PreparedStatementCreator() {
+//                    public PreparedStatement createPreparedStatement(Connection c) throws SQLException {
+//                        return c.prepareStatement("delete from users");
+//                    }
+//                }
+//        );
+        this.jdbcTemplate.update("delete from users");
     }
 
     public Integer getCount() throws SQLException {
