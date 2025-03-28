@@ -49,13 +49,12 @@ public class UserDao {
         return user;
     }
 
-
-    public void deleteAll() throws SQLException {
+    public void jdbcContextWithStrategy(StatementStrategy stmt) throws SQLException {
         Connection c = null;
         PreparedStatement ps = null;
         try {
             c = dataSource.getConnection();
-            ps = new DeleteAllStatement().makePreparedStatement(c);
+            ps =stmt.makePreparedStatement(c);
             ps.executeUpdate();
         } catch (SQLException e) {
             throw e;
@@ -75,6 +74,12 @@ public class UserDao {
                 }
             }
         }
+
+    }
+
+
+    public void deleteAll() throws SQLException {
+        jdbcContextWithStrategy(new DeleteAllStatement());
     }
 
     public Integer getCount() throws SQLException {
