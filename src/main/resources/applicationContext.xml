@@ -14,7 +14,7 @@
         <property name="dataSource" ref="dataSource" />
     </bean>
 
-    <bean id="userDao" class="com.springbook.tobi.user.UserDao">
+    <bean id="userDao" class="com.springbook.tobi.user.UserDaoJdbc">
         <property name="dataSource" ref="dataSource" />
     </bean>
 </beans>
