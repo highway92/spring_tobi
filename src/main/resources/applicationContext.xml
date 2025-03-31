@@ -5,7 +5,7 @@
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
         <property name="driverClass" value="org.postgresql.Driver" />
-        <property name="url" value="jdbc:postgresql://localhost:5432/tobi" />
+        <property name="url" value="jdbc:postgresql://localhost:5432/tobi_test" />
         <property name="username" value="postgres" />
         <property name="password" value="postgres" />
     </bean>
@@ -16,5 +16,9 @@
 
     <bean id="userDao" class="com.springbook.tobi.user.UserDaoJdbc">
         <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <bean id="userService" class="com.springbook.tobi.user.UserService">
+        <property name="userDao" ref="userDao" />
     </bean>
 </beans>
