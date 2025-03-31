@@ -73,4 +73,13 @@ public class User {
     public int hashCode() {
         return Objects.hash(id, name, password);
     }
+
+    public void upgradeLevel() {
+        Level nextLevel = level.nextLevel();
+        if(nextLevel == null) {
+            throw new IllegalStateException(this.level + "은 업그레이드가 불가합니다.");
+        } else {
+            this.level = nextLevel;
+        }
+    }
 }
