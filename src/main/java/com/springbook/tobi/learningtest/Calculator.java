@@ -24,7 +24,7 @@ public class Calculator {
     public String concat(String filePath) throws IOException {
         return lineReadTemplate(filePath, new LineCallback<String>() {
             public String doSomethingWithLine(String line, String value) {
-                return line + value;
+                return value + line;
             }
         },"a");
     }

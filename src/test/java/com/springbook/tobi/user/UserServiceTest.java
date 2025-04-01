@@ -6,6 +6,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.PlatformTransactionManager;
+
+import javax.sql.DataSource;
+
+import static com.springbook.tobi.user.UserService.MIN_LOGOUT_FOR_SILVER;
+import static com.springbook.tobi.user.UserService.MIN_RECOMMEND_FOR_GOLD;
+import static com.springbook.tobi.user.UserService.TestUserService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +28,12 @@ class UserServiceTest {
     @Autowired
     private UserDao userDao;
 
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+
+    @Autowired
+    private MailSender mailSender;
+
     List<User> users;
 
     @Test
@@ -31,11 +44,11 @@ class UserServiceTest {
     @BeforeEach
     public void setUp() {
         users = Arrays.asList(
-                new User("bumjin", "박범진", "p1", Level.BASIC,49,0),
-                new User("joytouch", "강명성", "p2", Level.BASIC,50,0),
-                new User("erwins", "신승한", "p3", Level.SILVER,60,29),
-                new User("madnite1", "이상호", "p4", Level.SILVER,60,30),
-                new User("green", "오민규", "p5", Level.GOLD,100,100)
+                new User("bumjin", "박범진", "p1", Level.BASIC,MIN_LOGOUT_FOR_SILVER - 1,0,"qwer@google.com"),
+                new User("joytouch", "강명성", "p2", Level.BASIC,MIN_LOGOUT_FOR_SILVER,0,"qwer2@google.com"),
+                new User("erwins", "신승한", "p3", Level.SILVER,60,MIN_RECOMMEND_FOR_GOLD - 1,"qwer3@google.com"),
+                new User("madnite1", "이상호", "p4", Level.SILVER,60,MIN_RECOMMEND_FOR_GOLD,"qwer4@google.com"),
+                new User("green", "오민규", "p5", Level.GOLD,100,Integer.MAX_VALUE,"qwer5@google.com")
         );
     }
 
@@ -46,17 +59,21 @@ class UserServiceTest {
             userDao.add(user);
         }
         userService.upgradeLevels();
-        checkLevel(users.get(0), Level.BASIC);
-        checkLevel(users.get(1), Level.SILVER);
-        checkLevel(users.get(2), Level.SILVER);
-        checkLevel(users.get(3), Level.GOLD);
-        checkLevel(users.get(4), Level.GOLD);
+        checkLevel(users.get(0), false);
+        checkLevel(users.get(1), true);
+        checkLevel(users.get(2), false);
+        checkLevel(users.get(3), true);
+        checkLevel(users.get(4), false);
 
     }
 
-    private void checkLevel(User user, Level level) {
+    private void checkLevel(User user, boolean upgraded) {
         User userUpdate = userDao.get(user.getId());
-        assertEquals(userUpdate.getLevel(), level);
+        if(upgraded) {
+            assertEquals(userUpdate.getLevel(), user.getLevel().nextLevel());
+        } else {
+            assertEquals(userUpdate.getLevel(), user.getLevel());
+        }
     }
 
     @Test
@@ -75,5 +92,20 @@ class UserServiceTest {
 
         assertEquals(userWithLevelRead.getLevel(), userWithLevel.getLevel());
         assertEquals(userWithoutLevelRead.getLevel(), Level.BASIC);
+    }
+
+    @Test
+    public void upgradeAllOrNothing() {
+        UserService testUserService = new TestUserService(users.get(3).getId());
+        testUserService.setUserDao(this.userDao);
+        testUserService.setTransactionManager(this.transactionManager);
+        testUserService.setMailSender(this.mailSender);
+        userDao.deleteAll();
+        for(User user : users) userDao.add(user);
+
+        try {
+            testUserService.upgradeLevels();
+        } catch (TestUserService.TestUserServiceException e) {}
+        checkLevel(users.get(1), false);
     }
 }
